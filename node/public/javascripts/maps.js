@@ -17,6 +17,7 @@ function addDefaultRoutes(){
 		myRoutes["Trabajo"] = [new google.maps.LatLng(-2.1445351790, -79.96751056), new google.maps.LatLng(-2.160446, -79.899795)];
 }*/
 function initializeMap(){
+    console.log("init map");
     directionsDisplay = new google.maps.DirectionsRenderer();
     navigator.geolocation.getCurrentPosition(function (position) {
 
@@ -335,10 +336,24 @@ $(document).ready( function(){
         });
         $("body").on('click', '.takeMe', function(){
             console.log('takeMe');
-	    var de = document.getElementById("perfilUsuario").innerHTML;
-            socket.emit("notificacion", de, $(this).attr("data-user"), 0);
+	    var de = $("#TempUsuario").val();
+            console.log("de: " + de);
+            console.log("para: " + $(this).attr("data-user"));
+            socket.emit("notificacion", de, $(this).attr("data-user"), "", 0);
         });
 
+        $("body").on('click', '.llevarBtn', function(){
+            console.log('llevar');
+	    var de = $("#TempUsuario").val();
+            console.log("de: " + de);
+            console.log("para: " + $(this).attr("data-user"));
+            socket.emit("notificacion", de, $(this).attr("data-user"), "", 2);
+        });
+
+        $("body").on('click', '.ignoreBtn', function(){
+            console.log('ignore');
+            $(this).parent().remove();
+        });
 
         //Mostrar gente cerca cuando das click a una ruta
 	$("body").on('click', 'li.misRutas', function(){                
@@ -347,7 +362,7 @@ $(document).ready( function(){
 		clearFollowersNotification();
                 if(getPageType() == "car"){
 		    showRuta($(this).attr('data-pts'));
-                    getFollowersNotifications();
+                    //getFollowersNotifications();
                 }else{
 		    showDestino(replaceWhitespace($(this).attr('data-name')));
                     getFollowingsNotifications(start.position.lat(), start.position.lng(), end.position.lat(), end.position.lng());

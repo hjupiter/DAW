@@ -1,14 +1,11 @@
 extends layout
 
 block lowPriorityScripts
-    script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js")
     script(src="/javascripts/clientAPI.js")
     script(src="/javascripts/walk-functions.js")
     script(src="/javascripts/maps.js")
 
 block menuIcons
-    div(id="nuevaData" class="icon material-icons") add
-    div(class="mdl-tooltip" for="nuevaData") Nuevo Destino
     div(id="followers-btn" class="icon material-icons") people
     div(class="mdl-tooltip" for="followers-btn") Siguiendo
     div(id="walking" class="icon material-icons") directions_car

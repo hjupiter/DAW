@@ -1,6 +1,5 @@
 var myRoutes = [];
 var myDest = [];
-moment().locale('es');
 function handleJSON(url, callback){
 	var xmlhttp = new XMLHttpRequest();
 	xmlhttp.onreadystatechange = function() {
@@ -19,15 +18,18 @@ function handleJSON(url, callback){
 
 function processFollowersNotifications(jArray){
 	var i;
-	var start = '<div class="near-container"><dt>';
-        var preDist = '</dt><dd>';
-	var end = '</dd><div><button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent notif-button ">Llevar</button></div><hr></div>';
+	var start = '<div class="near-container"><span class="time-text">' ;
+        var preLink = '</span><strong><a href="/inicio/';
+        var preName = '" target="_blank">';
+        var preButtons = '</a></strong><br><button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent notif-button llevarBtn" data-user="';
+        var preIgnore = '">Llevar</button><button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent notif-button ignoreBtn" data-user="';
+        var end = '">Ignorar</button><hr></div>';
 	var out = "";
 	for (i=0; i<jArray.length; i++){
-	    out += start + jArray[i].name + preDist  + 'A ' + jArray[i].dist + 'm del punto de partida' + end;
+	    out += start + moment(jArray[i].timeStamp).fromNow() + preLink  + jArray[i].username + preName +  jArray[i].nombre + preButtons + jArray[i].username  + preIgnore + jArray[i].username+ end;
 	}
 	console.log(out);
-	document.getElementById('active-follower-list').innerHTML = out;
+	document.getElementById('active-follower-list').innerHTML += out;
 }
 
 function processFollowingsNotifications(jArray){
@@ -37,14 +39,16 @@ function processFollowingsNotifications(jArray){
 	var start = '<div class="near-container"><span class="time-text">' ;
         var mid1 = '</span><dt>';
         var preCap = '</dt><dd>';
-	var preUser = 'disponibles</dd><div><button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent notif-button takeMe"  data-user="';
+	var prelink = 'disponibles</dd><strong>Conductor: </strong><a target="_blank" href="/inicio/';
+        var preUsername = '">';
+        var preUser = '</a><div><button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent notif-button takeMe"  data-user="';
         var preRuta = '">Llevame</button><button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent notif-button followingRoute" data-pts=\'';
 
         var end = '\'>Ver Ruta</button></div><hr></div>';
 	var out = "";
 	for (i=0; i<jArray.length; i++){
             var asientos = jArray[i].asientos !== 1 ? '&nbspasientos&nbsp' : '&nbspasiento&nbsp';
-	    out += start + moment().startOf('day').add(jArray[i].hour, 'minutes').fromNow() + mid1 + jArray[i].name + preCap  + jArray[i].asientos  + asientos + preUser + jArray[i].userId + preRuta + JSON.stringify(jArray[i].points) + end;
+	    out += start + moment().startOf('day').add(jArray[i].hour, 'minutes').fromNow() + mid1 + jArray[i].name + preCap  + jArray[i].asientos  + asientos + prelink +jArray[i].userId + preUsername + jArray[i].userId +  preUser + jArray[i].userId + preRuta + JSON.stringify(jArray[i].points) + end;
 	}
         //console.log("notification: " + out);
         if(out.length > 0)

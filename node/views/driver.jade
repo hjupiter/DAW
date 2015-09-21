@@ -1,7 +1,6 @@
 extends layout
 
 block lowPriorityScripts
-    script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js")
     script(src="/javascripts/clientAPI.js")
     script(src="/javascripts/car-functions.js")
     script(src="/javascripts/maps.js")
@@ -14,29 +13,6 @@ block menuIcons
     div(class="mdl-tooltip" for="followers-btn") Siguiendo
     div(id="walking" class="icon material-icons") directions_run
     div(class="mdl-tooltip" for="walking") No tengo carro...
-
-block popups
-    div(class="modal fade" id="myModal_siguiendo" role="dialog")
-                div.modal-dialog
-                    div.modal-content
-                        div.modal-header
-                            button(type="button" class="close" data-dismiss="modal") &times;
-                            h4.modal-title Siguiendo
-                        div.modal-body
-                            div.container-fluid
-                                div.row
-                                    div(id="bus_seguidores" class="col-md-9")
-                                        //Expandable  Textfield
-                                        form(action="#")
-                                            div(class="mdl-textfield mdl-js-textfield mdl-textfield--expandable textfield-demo")
-                                                label(class="mdl-button mdl-js-button mdl-button--icon" for="sample6")
-                                                    i(class="material-icons") search
-                                                div.mdl-textfield__expandable-holder
-                                                    input(class="mdl-textfield__input" type="text" id="sample6")
-                                                    label(class="mdl-textfield__label" for="sample-expandable") Expandable Input
-                                div(id="followersRow" class="row")
-                        div.modal-footer
-                            button(type="button" class="btn btn-default" data-dismiss="modal") Close
 
 block content
     nav(id="rutas-nav" class="columna")
@@ -92,5 +68,4 @@ block content
     #map-canvas
     nav(id="follower-nav" class="columna")
         #active-follower-list
-            p#emptyNotif No hay datos.<br>Selecciona un destino.
 

@@ -31,7 +31,14 @@ var usuariosOnlineMensaje = [];
 function printResult(res){
     console.log(res);
 }
-
+function notificacionPrivadaCallback(socket, usu, mensaje, tipo, de, timeStamp){
+    db_handler.obtener_usuario(de, function(queryRes){
+        var nom = queryRes[0].nombre;
+        console.log("enviando notif a " + usu);
+        socket.broadcast.to(usu).emit("notificarMensajePrivado",mensaje,nom.substring(0,nom.indexOf(' ')), tipo,de, timeStamp);
+        console.log("*********************");
+    });
+}
 io.on('connection', function(socket){
 	
 	socket.on("inicioSesion",function(username){
@@ -43,8 +50,10 @@ io.on('connection', function(socket){
             var i = 0,bandera=0;
             for(i=0;i<usuariosOnlineMensaje.length;i++){
               var name = usuariosOnlineMensaje[i].nick;
-              if(name==username){
+              var id = usuariosOnlineMensaje[i].id;
+              if(name==username && id != socket.id){
                 //usuariosOnline.push(gr);
+                usuariosOnlineMensaje[i].id = socket.id;
                 bandera=1;
                 console.log("nuevo usuario");
               }
@@ -75,11 +84,12 @@ io.on('connection', function(socket){
 
     socket.on('addNewMessage', function(de,para,message){
         var i = 0;
+        var nom;
         for(i=0;i<usuariosOnlineMensaje.length;i++){
                 console.log(usuariosOnlineMensaje[i].nick);
                 console.log(usuariosOnlineMensaje[i].id);
                 console.log("+++++++++++");
-                var nom = usuariosOnlineMensaje[i].nick;
+                nom = usuariosOnlineMensaje[i].nick;
                 if(nom==para){
                     var usu = usuariosOnlineMensaje[i].id;
                     console.log(usu);
@@ -91,12 +101,12 @@ io.on('connection', function(socket){
                 console.log(usuariosOnlineMensaje[i].nick);
                 console.log(usuariosOnlineMensaje[i].id);
                 console.log("999999999999999999999999999999");
-                var nom = usuariosOnlineMensaje[i].nick;
+                nom = usuariosOnlineMensaje[i].nick;
                 if(nom==de){
-                    var usu = usuariosOnlineMensaje[i].id;
-                    console.log(usu);
+                    var usuario = usuariosOnlineMensaje[i].id;
+                    console.log(usuario);
                     console.log(usuariosOnlineMensaje[i].nick);
-                    socket.to(usu).emit("message","msg", "Yo: " +message + ".");
+                    socket.to(usuario).emit("message","msg", "Yo: " +message + ".");
                     console.log("999999999999999999999999999999");
                 }
         }
@@ -104,28 +114,13 @@ io.on('connection', function(socket){
           //socket.broadcast.emit("message","msg",socket.username+ "dice: "+ message);
     });
 
-    //cuando el usuario cierra o actualiza el navegador
-    socket.on("disconnect", function(){
-      //si el usuario, por ejemplo, sin estar logueado refresca la
-      //página, el typeof del socket username es undefined, y el mensaje sería
-      //El usuario undefined se ha desconectado del chat, con ésto lo evitamos
-      if(typeof(socket.username) == "undefined")
-      {
-        return;
-      }
-      //en otro caso, eliminamos al usuario
-      delete usuariosOnline[socket.username];
-      //actualizamos la lista de usuarios en el chat, zona cliente
-      io.sockets.emit("updateSidebarUsers", usuariosOnline);
-      //emitimos el mensaje global a todos los que están conectados con broadcasts
-      socket.broadcast.emit("refreshChat", "desconectado", "El usuario " + socket.username + " se ha desconectado del chat.");
-    });
-
-    socket.on('notificacion',function (de,para,mensaje,tipo,timeStamp){
-      console.log(de);
-      console.log(para);
+    socket.on('notificacion',function (de,para,mensaje,tipo){
+      console.log("nueva notificacion");
+      console.log("de: " + de);
+      console.log("para: " + para);
       console.log(mensaje);
       console.log("-----------------------------");
+      timeStamp = Date.now();
           var i = 0;
 		  var flag = 0;
 		  var fecha = new Date();
@@ -155,16 +150,16 @@ io.on('connection', function(socket){
                       var mensajeTotal = new db_handler.mensajeria(de,para,mensaje,fecha,timeStamp,ubicacion,tipo,leido);
                       console.log(mensajeTotal);
                       db_handler.enviar_mensaje(mensajeTotal,printResult);
+                      notificacionPrivadaCallback(socket, usu, mensaje, tipo, de, timeStamp);
                       //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                      socket.broadcast.to(usu).emit("notificarMensajePrivado",mensaje,tipo,de);
-                      console.log("*********************");
-					  flag = 1;
+                      flag = 1;
+                      
                   }
                 console.log("++++++++++++++++++++++++++++++");
           }
-		  if(flag == 0){
-            var mensajeTotal = new db_handler.mensajeria(de,para,mensaje,fecha,timeStamp,ubicacion,tipo,leido);
-            db_handler.enviar_mensaje(mensajeTotal,function(queryRes){
+		  if(flag === 0){
+            var mensajeT= new db_handler.mensajeria(de,para,mensaje,fecha,timeStamp,ubicacion,tipo,leido);
+            db_handler.enviar_mensaje(mensajeT,function(queryRes){
               console.log(queryRes);
             });
           }
@@ -446,14 +441,14 @@ app.get('/pass', function (req, res){
     if(!req.carPoolSession.username)
         res.redirect('/');
     else
-        res.render('pasajero.jade');
+        res.render('pasajero.jade', {usuario: req.carPoolSession.username});
 });
 
 app.get('/driver', function (req, res){
     if(!req.carPoolSession.username)
         res.redirect('/');
     else
-        res.render('driver.jade');
+        res.render('driver.jade', {usuario: req.carPoolSession.username});
 });
 
 app.post('/nuevaRuta', function (req, res){
