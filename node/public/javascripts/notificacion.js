@@ -160,3 +160,33 @@ function goToPage(newUrl){
         location.href = newUrl;
 }
 
+function pasajero(){
+    $.get('/pass', {}, function (data){ 
+        window.location.href='/pasajero';
+    });
+}
+
+function miPerfil(){
+    window.location.href = "/inicio";
+}
+
+function driver(){
+    $.get('/driver', {}, function (data){ 
+        window.location.href='/driver';
+    });
+}
+
+
+function logout(){
+    $.post('/logout', {}, function (data){ 
+        console.log("logout: " + data);
+        location.reload(true);
+    });
+}
+
+
+function siguiendo(){
+    $.get('/siguiendo',{},function (data){
+        window.location.href='/siguiendo';
+    });
+}

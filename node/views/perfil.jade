@@ -1,8 +1,8 @@
 extends layout
 
 block menuIcons
-	div(id="followers-btn" class="icon material-icons") people
-	div(class="mdl-tooltip" for="followers-btn" onclick="siguiendo();") Siguiendo
+	div(id="followers-btn" class="icon material-icons" onclick="siguiendo();") people
+	div(class="mdl-tooltip" for="followers-btn") Siguiendo
 	div(id="walking" class="icon material-icons" onclick="driver();") directions_run
 	div(class="mdl-tooltip" for="walking") No tengo carro...
 
