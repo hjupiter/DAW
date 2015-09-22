@@ -2,23 +2,32 @@ extends layout
 
 block content	
 	link(rel='stylesheet', href='/stylesheets/chat.css')
-	script(src='/socket.io/socket.io.js')
-	script(src='http://code.jquery.com/jquery-2.1.4.js')
-	script(src="/javascripts/mensaje.js")
 
-	ul(id="message")
+
 	input(value=usuario2 style="display:none;" id="TempUsuario2")
 
 	div(class="row")
 		div(class="container-fluid col-xs-12" align="center")
-			h1 Bienvenido al Chat
-	div(class="row")
-		div(class="container-fluid col-sm-12" id="containerMessages")
+	div(class="row" style="padding-top: 30px;")
+		div(class="container-fluid col-md-offset-1 col-sm-10" id="containerMessages")
 			div(class="panel panel-primary head")
 				div(class="panel-heading")
 					p Mensajes de la Sala
 				div(id="chatMsgs")
-		div(class="col-md-9" id="containerSendMessages" )
+					each mensaje in mensajes
+						- var name1 = mensaje.idUsuarioRemitente;
+						- var name2 = mensaje.idUsuarioRemisor;
+
+						- var a1 = usuario;
+						- var a2 = usuario2;
+
+						if a1==name1 && a2==name2
+							- var cadena = "Yo: "+mensaje.contenido;
+							p(class="col-md-12 alert-success")=cadena
+						else if a2==name1 && a1==name2
+							- var cadena = name1+" dice: "+mensaje.contenido;
+							p(class="col-md-12 alert-success")=cadena
+		div(class="col-md-offset-1 col-md-7" id="containerSendMessages" )
 			input(type="text" id="mensaje" placeholder="Escribe un mensaje" class="message col-md-12 form-control")
 		div(class="col-md-3" id="containerSendMessages")
 			input(type="button" class="btn btn-large btn-block btn-primary sendMsg" value="Enviar Mensaje") 
