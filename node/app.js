@@ -5,6 +5,10 @@ var methodOverride  = require('method-override');
 var sessions        = require("client-sessions");
 var soap            = require('soap');
 var db_handler      = require('./db_handler');
+var path            = require("path");
+var fs              = require("fs");
+var multipart       = require('connect-multiparty');
+
 //uploading files with multer
 var multer  = require('multer');
 var storage = multer.diskStorage({
@@ -42,8 +46,10 @@ function notificacionPrivadaCallback(socket, usu, mensaje, tipo, de, timeStamp){
 io.on('connection', function(socket){
 	
 	socket.on("inicioSesion",function(username){
+        console.log(usuariosOnlineMensaje);
+        console.log("-----------------------------------------------------------");
         var gr = {nick: username, id: socket.id};
-          if(usuariosOnlineMensaje.length === 0){
+          if(usuariosOnlineMensaje.length===0){
             usuariosOnlineMensaje.push(gr);
           }
           else{
@@ -51,7 +57,7 @@ io.on('connection', function(socket){
             for(i=0;i<usuariosOnlineMensaje.length;i++){
               var name = usuariosOnlineMensaje[i].nick;
               var id = usuariosOnlineMensaje[i].id;
-              if(name==username && id != socket.id){
+              if(name==username && id!=socket.id){
                 //usuariosOnline.push(gr);
                 usuariosOnlineMensaje[i].id = socket.id;
                 bandera=1;
@@ -114,6 +120,33 @@ io.on('connection', function(socket){
           //socket.broadcast.emit("message","msg",socket.username+ "dice: "+ message);
     });
 
+    socket.on("enviarMensaje", function (de,para,mensaje){
+      console.log(para);
+      console.log(mensaje);
+      console.log("-----------------------------");
+      var i = 0;
+
+      for(i=0;i<usuariosOnlineMensaje.length;i++){
+              console.log(usuariosOnlineMensaje[i].nick);
+              console.log(usuariosOnlineMensaje[i].id);
+              var nom = usuariosOnlineMensaje[i].nick;
+              if(nom==para){
+                  
+                  var usu = usuariosOnlineMensaje[i].id;
+                  console.log(usu);
+                  console.log("/////////////////////++++++++++++++++++++++++++++++");
+                  socket.broadcast.to(usu).emit("notificar","msg",de+ " dice: "+ mensaje);
+                  console.log("/////////////////////++++++++++++++++++++++++++++++");
+               
+            }
+      
+      }
+      console.log("/////////////////////-----------------------");
+      socket.emit("notificar","msg", "Yo: " +mensaje + ".");
+      console.log("/////////////////////-----------------------");
+      console.log("-----------------------------");
+    });
+
     socket.on('notificacion',function (de,para,mensaje,tipo){
       console.log("nueva notificacion");
       console.log("de: " + de);
@@ -121,6 +154,7 @@ io.on('connection', function(socket){
       console.log(mensaje);
       console.log("-----------------------------");
       timeStamp = Date.now();
+      //timeStamp = 0;
           var i = 0;
 		  var flag = 0;
 		  var fecha = new Date();
@@ -159,6 +193,7 @@ io.on('connection', function(socket){
           }
 		  if(flag === 0){
             var mensajeT= new db_handler.mensajeria(de,para,mensaje,fecha,timeStamp,ubicacion,tipo,leido);
+            console.log(mensajeT);
             db_handler.enviar_mensaje(mensajeT,function(queryRes){
               console.log(queryRes);
             });
@@ -182,6 +217,8 @@ app.use(morgan('dev'));                           // log every request to the co
 app.use(bodyParser.urlencoded({ extended: false }));    // parse application/x-www-form-urlencoded
 app.use(bodyParser.json());                 // parse application/json
 app.use(methodOverride());
+app.use(bodyParser());
+app.use(multipart());
 //app.use(bodyParser.({uploadDIr:'./uploads'}));
 
 app.use(sessions({
@@ -195,7 +232,11 @@ app.get('/chatPrivado/:idChat',function(req,res){
   console.log("-----------------------------------------------------------");
   console.log(req.carPoolSession.username);
   console.log("-----------------------------------------------------------");
-  res.render('chatPrivado.jade',{usuario: req.carPoolSession.username, usuario2:req.params.idChat});
+
+  db_handler.obtener_mensajes(function(queryMensaje){
+    console.log(queryMensaje);
+    res.render('chatPrivado.jade',{usuario: req.carPoolSession.username, usuario2:req.params.idChat, mensajes: queryMensaje});  
+  });
 });
 
 
@@ -232,7 +273,7 @@ app.get('/inicio', function (req, res) {
       db_handler.obtener_lista_seguidores(user,function(querySeguidores){
         db_handler.obtener_usuarios(function(queryUsuarios){
             res.render('perfil.jade',{listaPerfil : queryRes,
-                                      usuarioGlobal : req.carPoolSession.username,
+                                      usuario : req.carPoolSession.username,
                                       listaSeguidor : querySeguidores,
                                       listaUsuarios : queryUsuarios});
           });
@@ -251,8 +292,7 @@ app.get('/inicio/:id',function (req,res){
       db_handler.obtener_lista_seguidores(req.params.id,function (querySeguidores){
         db_handler.obtener_usuarios(function (queryUsuarios){
             res.render('perfil.jade',{listaPerfil : queryRes,
-                                      usuario : req.params.id,
-                                      usuarioGlobal : req.carPoolSession.username, 
+                                      usuario : req.carPoolSession.username,
                                       listaSeguidor : querySeguidores,
                                       listaUsuarios : queryUsuarios});
           });
@@ -277,11 +317,40 @@ app.get('/subirImagen',function (req,res){
   res.render('subirImagen.jade');
 });
 
+app.post('/subir', function (req, res) {
+    console.log("-->>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    //console.log(req.body.miArchivo.path);
+    //res.send({message:'Archivo guardado', file:req.file});
+    var path = req.files.miArchivo.path;
+    var type = req.files.miArchivo.type;
+    var name = req.carPoolSession.username+".jpeg";
+
+    if(type=="image/jpeg" || type=="image/png"){
+        var newPath = "./public/uploads/" + name;
+        var is = fs.createReadStream(path);
+        var os = fs.createWriteStream(newPath);
+        is.pipe(os);
+        is.on('end', function() {
+          //eliminamos el archivo temporal
+          fs.unlinkSync(path);
+        });
+
+        db_handler.update_usuario_imagen(1,req.carPoolSession.username,function(queryRes){
+          res.redirect('/inicio');
+          console.log(queryRes);
+          console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        });
+        
+    }
+    //console.log(tmp_path);
+    ///res.redirect('/inicio');
+});
+/*
 app.post('/subir', upload.single('file'), function (req, res, next) {
     //res.send({message:'Archivo guardado', file:req.file});
     res.redirect('/inicio');
 });
-
+*/
 app.get('/registro', function (req, res) {
   res.render('registro.jade');
 });
@@ -366,7 +435,7 @@ app.post('/crear', function (req, res){
                               Nombres = result.wsInfoUsuarioResult.diffgram.NewDataSet.INFORMACIONUSUARIO.NOMBRES;
                               Apellidos = result.wsInfoUsuarioResult.diffgram.NewDataSet.INFORMACIONUSUARIO.APELLIDOS;
                               //var bio = "--";
-                             var imagenRuta = "/uploads/user.jpg";
+                             var imagenRuta = 0;
                               user = new db_handler.user(Nombres, Apellidos, usrname, req.body.inPlaca, req.body.inCapacidad,req.body.inBiografia,imagenRuta);
                               db_handler.crear_usuario(user,function(queryRes){
                                    res.redirect('/');
@@ -515,6 +584,8 @@ app.get('/siguiendo', function (req, res) {
     });
   }
 });
+
+
 
 http.listen(PORT, function() {
   console.log('el Servidor esta escuchando en el puerto %s',PORT);

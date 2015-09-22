@@ -56,7 +56,7 @@ create procedure enviar_mensaje(idUsuarioRemitente VARCHAR(20),
 							    idUsuarioRemisor VARCHAR(20),
 							    contenido VARCHAR(280),
 							    fecha date,
-							    hora int,
+							    hora BIGINT,
 							    ubicacionActual VARCHAR(45),
 							    tipo INT,
 							    leido INT)
@@ -142,6 +142,25 @@ create procedure obtener_usuarios()
 begin
         select usuario.usuario,usuario.nombre,usuario.apellido,usuario.placa,usuario.capacidadCarro,usuario.bio
         from usuario;
+END;
+$$
+DELIMITER ;
+
+drop procedure if exists obtener_mensajes;
+DELIMITER $$
+create procedure obtener_mensajes()
+begin
+        select mensaje.idUsuarioRemitente, mensaje.idUsuarioRemisor, mensaje.contenido, mensaje.tipo
+        from mensaje;
+END;
+$$
+DELIMITER ;
+
+drop procedure if exists update_usuario_img;
+DELIMITER $$
+create procedure update_usuario_img(tipo int, username varchar(20))
+begin
+	UPDATE usuario SET imagenRuta = tipo WHERE usuario = username;
 END;
 $$
 DELIMITER ;

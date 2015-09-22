@@ -1,5 +1,10 @@
 extends layout
 
+block lowPriorityScripts
+	script(type="text/javascript" src="/javascripts/bootstrap-filestyle.min.js")
+	link(rel="stylesheet", href="/stylesheets/perfil_style.css")
+	script(src='/javascripts/perfil_val.js')
+
 block menuIcons
 	div(id="followers-btn" class="icon material-icons" onclick="siguiendo();") people
 	div(class="mdl-tooltip" for="followers-btn") Siguiendo
@@ -9,23 +14,30 @@ block menuIcons
 	div(class="mdl-tooltip" for="walking") No tengo carro...
 
 block content
+	script(src="/javascripts/perfil_val.js")
+	link(rel="stylesheet", href="/stylesheets/perfil_style.css")
 	div(class="container")
 		div(class="row profile")
 			div(class="col-md-3")
 				div(class="profile-sidebar")
 					each perfil in listaPerfil
-						if perfil.usuario == usuarioGlobal
-							if perfil.imagenRuta == "/uploads/user.jpg" & perfil.imagenRuta != "/uploads/"+perfil.usuario+".png"
-								- var ruta = perfil.imagenRuta;
+						if perfil.usuario == usuario
+							if perfil.imagenRuta == 0
+								- var img = "default";
+								- var ruta = "/uploads/"+img+".jpg";
 							else
-								- var ruta = "/uploads/"+perfil.usuario+".png";
+								- var ruta = "/uploads/"+usuario+".jpeg";
+							
 							div(class="profile-userpic")
 								img(src=ruta class="img-responsive" alt="")
+								center
+									form(role="form" enctype="multipart/form-data" method="POST" action="/subir")
+										div(id="editar-imagen")
+											input(type="file" onchange="this.form.submit()" class="filestyle" data-input="false" data-badge="false" name="miArchivo")
+										div(class="mdl-tooltip" for="editar-imagen") Editar Imagen
 							div(class="profile-usertitle")
 								- var nombrePerfil = perfil.nombre+" "+perfil.apellido
-								div(class="profile-usertitle-name")=nombrePerfil
-								//nuevo
-								
+								div( class="profile-usertitle-name")=nombrePerfil
 								div(id="perfilUsuario" class="profile-usertitle-job")=perfil.usuario
 							div(class="profile-userbuttons")
 								button(class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent") Seguidores
@@ -34,13 +46,10 @@ block content
 							div(class="profile-usermenu")
 								ul(class="nav")
 									li()
-										a(href="/editar")
-											i(class="glyphicon glyphicon-pencil")
-											label(class="text-center") Editar
-									li()
-										a(href="#" onclick="habilitaImagenDiv();")
-											i(class="glyphicon glyphicon-picture text-center")
-											label(class="text-center") Editar Imagen
+										if perfil.usuario == usuario
+											a(href="/editar")
+												i(class="glyphicon glyphicon-pencil")
+												label(class="text-center") Editar
 									if perfil.placa != "XXX0000"
 										li()
 											a(href="#")
@@ -56,63 +65,12 @@ block content
 										a(href="#")
 											i(class="glyphicon glyphicon-star text-center")
 											label(class="text-center")=perfil.bio
-						else if perfil.usuario != usuarioGlobal
-							//perfil seguidor
-							each perfil in listaPerfil
-								if perfil.usuario == usuario
-									if perfil.imagenRuta == "/uploads/user.jpg" & perfil.imagenRuta != "/uploads/"+perfil.usuario+".png"
-										- var ruta = perfil.imagenRuta;
-									else
-										- var ruta = "/uploads/"+perfil.usuario+".png";
-									div(class="profile-userpic")
-										img(src=ruta class="img-responsive" alt="")
-									div(class="profile-usertitle")
-										- var nombrePerfil = perfil.nombre+" "+perfil.apellido
-										div(class="profile-usertitle-name")=nombrePerfil
-										div(class="profile-usertitle-job")=perfil.usuario
-									div(class="profile-userbuttons")
-										button(class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent") Seguidores
-										&nbsp;
-										button(class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent") Siguiendo
-									div(class="profile-usermenu")
-										ul(class="nav")
-											if perfil.placa != "XXX0000"
-												li()
-													a(href="#")
-														- var placaCarro = "Placa : "+perfil.placa;
-														i(class="glyphicon glyphicon-flag text-center")
-														label(class="text-center")=placaCarro
-												li()
-													a(href="#")
-														- var capacidad= "Capacidad del Carro: "+perfil.capacidadCarro;
-														i(class="glyphicon glyphicon-scale text-center")
-														label(class="text-center")=capacidad
-											li()
-												a(href="#")
-													i(class="glyphicon glyphicon-star text-center")
-													label(class="text-center")=perfil.bio
-				//carga un div con la imagen para poder ponerla en /upload
-				div(id="formularioImagen" style="display:none" class="profile-sidebar")
-					div(class="form-group")
-						form(role="form" action="/subir" method="post" enctype="multipart/form-data")
-							div(class="fileUpload btn btn-default")
-								label  Seleccione una imagen ..
-								span(class="glyphicon glyphicon-folder-open")
-								input(name="file" type="file" id="files" class="upload")
-							div(class="form-group")
-								div()
-									button(type="submit" class="btn btn-default" onclick="habilitaImagenDiv();")
-										span(class="glyphicon glyphicon-ok-circle")
-									&nbsp; &nbsp;
-									button(type="submit" class="btn btn-default" onclick="desabilitaImagenDiv();")
-										span(class="glyphicon glyphicon-remove-circle")
 			div(class="col-md-9")
 				div(class="profile-content")
 					div(class="row")
 						//Seguidores
 						div(class="col-md-1")
-							div(class="profile-usertitle-name")
-								label Seguidores/Siguiendo
+							label Seguidores/Siguiendo
 						hr
 						each usuario in listaUsuarios
 							each seguidor in listaSeguidor
@@ -123,7 +81,7 @@ block content
 												if usuario.imagenRuta == "/uploads/user.jpg"
 													- var ruta = usuario.imagenRuta;
 												else
-													- var ruta = "/uploads/"+usuario.usuario+".png";
+													- var ruta = "/uploads/"+usuario.usuario+".jpeg";
 												img(src=ruta class="img-responsive" alt="...")
 											div(class="caption")
 												div(class="profile-usertitle")
@@ -131,12 +89,11 @@ block content
 														div(class="profile-usertitle-name")
 															p
 																- var nombreCompleto = usuario.nombre+" "+usuario.apellido;
-																a(id="#{usuario.usuario}" class="divSeguidor" name="usuarioSeguidor" href="/inicio/#{usuario.usuario}")
-																	span(class="glyphicon glyphicon-user")=nombreCompleto
+																span(name="usuarioSeguidor" class="glyphicon glyphicon-user")=nombreCompleto
 												div(class="profile-userbuttons")
 													div(class="btn-group btn-group-justified" role="group" aria-label="...")
 														div(class="btn-group" role="group")
-																a(href="")
+																a(href="/chat-individual" id="#{usuario.usuario}" class="divSeguidor" name="#{usuario.usuario}")
 																	i(class="icon material-icons") question_answer
 														if usuario.placa != "XXX0000"
 															div(class="btn-group" role="group")
@@ -152,6 +109,3 @@ block content
 																a(href="/enviar_notificacion_llevame")
 																	i(class="glyphicon glyphicon-flag")
 																		label() No tiene Carro
-	script(src='/javascripts/perfil_val.js')
-	script(src='https://code.jquery.com/jquery-latest.js')
-	link(rel="stylesheet", href="/stylesheets/perfil_style.css")

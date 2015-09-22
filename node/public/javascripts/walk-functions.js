@@ -50,3 +50,8 @@ function submitContent(){
     clearNewDataForm();
 }
  
+function siguiendo(){
+    $.get('/siguiendo',{},function (data){
+        location.href='siguiendo';
+    });
+}

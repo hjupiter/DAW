@@ -98,13 +98,14 @@ function isRouteClose(array, startX, startY, endX, endY){
 
 module.exports = {
 
-  user: function(nombre, apellido, username, placa, capacidad, bio) {
+  user: function(nombre, apellido, username, placa, capacidad, bio, imagenRuta) {
     this.nombre = nombre;
     this.apellido = apellido;
     this.username = username;
     this.placa = placa;
     this.capacidad = capacidad;
     this.bio = bio;
+    this.imagenRuta = imagenRuta;
   },
 
   obtener_seguidor: function (usuario, callback) {
@@ -357,6 +358,18 @@ module.exports = {
   guardar_imagen_ruta: function (usuario, callback){
     var queryStr = 'call rapidin.guardar_imagen_ruta(:username)';
     var object = {username: usuario.username};
+    executeQuery(queryStr,object,callback);
+  },
+
+  obtener_mensajes: function (callback){
+    var queryStr = 'call rapidin.obtener_mensajes()';
+    var object = null;
+    executeQuery(queryStr,object,callback);
+  },
+
+  update_usuario_imagen: function(tipo,username,callback){
+    var queryStr = 'call rapidin.update_usuario_img(:tipo, :username)';
+    var object = {tipo: tipo, username: username};
     executeQuery(queryStr,object,callback);
   }
 };

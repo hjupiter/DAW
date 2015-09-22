@@ -33,11 +33,11 @@ foreign key(idUsuario2Seguidor ) references usuario(usuario)
 
 create table mensaje(
 idMensaje INT not null AUTO_INCREMENT,
-idUsuarioRemitente INT not null,
-idUsuarioRemisor INT not null,
+idUsuarioRemitente varchar(20),
+idUsuarioRemisor varchar(20),
 contenido varchar(280),
 fecha date,
-hora int,
+hora BIGINT,
 ubicacionActual varchar(45),
 tipo int,
 leido int,
