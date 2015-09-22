@@ -58,4 +58,21 @@ function siguiendo(){
     });
 }
 
-document.getElementById('files').addEventListener('change', archivo, false);
+$(function() {
+    $(":file").filestyle('iconName', 'glyphicon glyphicon-pencil');
+    $(":file").filestyle('buttonText', '');
+  // Aquí añadiremos nuestro código
+});
+
+function pass(){
+    $.get('/siguiendo',{},function (data){
+        location.href='pass';
+    });
+}
+
+function miPerfil(){
+    window.location.href = "/inicio";
+}
+
+
+//document.getElementById('files').addEventListener('change', archivo, false);

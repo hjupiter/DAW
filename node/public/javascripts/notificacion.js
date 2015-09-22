@@ -3,6 +3,8 @@ var NUEVOMENSAJE = "notif-newmsg";
 var CONFIRMACION = "notif-confirm";
 var socket = io();
 
+
+
 $(window).on('beforeunload', function(){
         console.log("close socket");
         socket.close();
@@ -13,6 +15,8 @@ $(document).ready(function(){
     var name = document.getElementById("TempUsuario").value;
     console.log("emit" + name);
     socket.emit("inicioSesion",name);
+    //var container = $('#containerMessages');
+    //container.animate({"scrollTop": $('#containerMessages')[0].scrollHeight}, "slow");
 });
 
 var badge_num = 0;
@@ -27,29 +31,76 @@ function removeBadge(){
 
 }
 $(function(){
-	/*
-	//CHAT
 	$(".sendMsg").on("click", function(){
-		var de = document.getElementById("TempUsuario").value;
-		var para = document.getElementById("TempUsuario2").value;
-		var mensaje = $("#mensaje").val();
-		var tipo = 1;
-		console.log(para);
-		console.log(mensaje);
+        var de = document.getElementById("TempUsuario").value;
+        var para = document.getElementById("TempUsuario2").value;
+        var mensaje = $("input#mensaje").val();
+        console.log("+++++++++++++++++++");
+        console.log("de: "+de);
+        console.log("para: "+para);
+        console.log("mensaje: "+mensaje);
+        console.log("+++++++++++++++++++");
+        
 
-        if(mensaje=='') return false;
+        var tipo = 1;
+        var timeStamp = 0;
+        console.log(para);
+        console.log(mensaje);
+
         //evento menssaje ene l server nodejs
-        socket.emit('addNewMessage',de, para,mensaje);
-        socket.emit("notificacion",de,para,mensaje,tipo);
-        $("#mensaje").val('').focus();
-        return false;
+        socket.emit("enviarMensaje",de,para,mensaje);
+        socket.emit("notificacion",de,para,mensaje,tipo,timeStamp)
+        //socket.emit("notificacion",de,para,mensaje,tipo);
+    });
 
-		
-	});
-	*/
+    socket.on("notificar", function (action,message){
+        //var not = document.getElementsBy("not").setAttribute("class","glyphicon glyphicon-info-sign");;
+        //$("#not").attr("class","glyphicon glyphicon-info-sign");  
+        //console.log(mensaje);
+        //$("#chatMsgs").append("<p class='col-md-12 alert-info'>"+mensaje+"</p>");
+        //not.setAttribute("class","glyphicon glyphicon-info-sign");
+        //console.log("++++++++++++++++++");
+        //alert("asdasdasdasd");
+
+        if(action == "conectado")
+        {
+            $("#chatMsgs").append("<p class='col-md-12 alert-info'>" + message + "</p>");
+        }
+        //si es una desconexión
+        else if(action == "desconectado")
+        {
+            $("#chatMsgs").append("<p class='col-md-12 alert-danger'>" + message + "</p>");
+        }
+        //si es un nuevo mensaje 
+        else if(action == "msg")
+        {
+            $("#chatMsgs").append("<p class='col-md-12 alert-warning'>" + message + "</p>");
+        }
+        //si el que ha conectado soy yo
+        else if(action == "yo")
+        {
+            $("#chatMsgs").append("<p class='col-md-12 alert-success'>" + message + "</p>");
+        }
+
+        var de = document.getElementById("TempUsuario").value;
+        var para = document.getElementById("TempUsuario2").value;
+        var mensaje = $("input#mensaje").val();
+        var timeStamp = 0;
+        var tipo = 1;
+        console.log(de);
+        console.log(para);
+        console.log(mensaje);
+        //socket.emit("notificacion",de,para,mensaje,tipo,timeStamp)
+        //var container = $('#containerMessages');
+        //container.animate({"scrollTop": $('#containerMessages')[0].scrollHeight}, "slow");
+        //alert("gurdDO");
+    });
+
 	$("#notifica").on("click", function(){
             removeBadge();
         });
+
+    /*
 	$(".sendMsg").on("click", function(){
 		var de = document.getElementById("perfilUsuario").innerHTML;
 		var para = $("input#para").val();
@@ -60,7 +111,7 @@ $(function(){
 		console.log(mensaje);
 		socket.emit("notificacion",de,para,mensaje,tipo,timeStamp);
 	});
-
+    */
 	$(".sendNotificacion").on("click", function(){
 		var de = document.getElementById("perfilUsuario").innerHTML;
 		var para = $("input#para").val();
@@ -160,3 +211,7 @@ function goToPage(newUrl){
         location.href = newUrl;
 }
 
+
+function miPerfil(){
+    window.location.href = "/inicio";
+}

@@ -145,3 +145,22 @@ begin
 END;
 $$
 DELIMITER ;
+
+drop procedure if exists obtener_mensajes;
+DELIMITER $$
+create procedure obtener_mensajes()
+begin
+        select mensaje.idUsuarioRemitente, mensaje.idUsuarioRemisor, mensaje.contenido, mensaje.tipo
+        from mensaje;
+END;
+$$
+DELIMITER ;
+
+drop procedure if exists update_usuario_img;
+DELIMITER $$
+create procedure update_usuario_img(tipo int, username varchar(20))
+begin
+	UPDATE usuario SET imagenRuta = tipo WHERE usuario = username;
+END;
+$$
+DELIMITER ;

@@ -3,16 +3,17 @@ html
   head
     meta(name="viewport", content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum.scale=1.0")
     block highPriorityScripts
-    script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
-    link(rel="stylesheet", href="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.blue-pink.min.css")
-    link(rel="stylesheet", href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css")
-    script(src="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.min.js")
-    link(rel="stylesheet", href="https://fonts.googleapis.com/icon?family=Material+Icons")
-    link(rel="stylesheet", href="/stylesheets/main_style.css")
+    link(rel="stylesheet",   href="/stylesheets/main_style.css")
+    link(rel="stylesheet",   href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css")
+    link(rel="stylesheet",   href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css")
+    link(rel="stylesheet",   href="https://storage.googleapis.com/code.getmdl.io/1.0.0/material.blue-pink.min.css")
+    link(rel="stylesheet",   href="https://fonts.googleapis.com/icon?family=Material+Icons")
     script(src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true")
-    script(src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js")
+    script(src="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.min.js")
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
+    script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js")
     script(src='/socket.io/socket.io.js')
-    script(src="/javascripts/moment.js")
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js")
     script(src="/javascripts/notificacion.js")
     block lowPriorityScripts
   body
@@ -36,11 +37,12 @@ html
       div(class="mdl-layout__drawer")
         span(class="mdl-layout-title") Rapid&iacuten Espol
         nav(class="mdl-navigation")
-          a(class="mdl-navigation__link") Perfil
-          a(class="mdl-navigation__link") No tengo carro
+          a(class="mdl-navigation__link" href="/inicio") Perfil
+          a(class="mdl-navigation__link" href="/pass") No tengo carro
+          a(class="mdl-navigation__link" href="/driver") Tengo Carro
           a(class="mdl-navigation__link" href="/seguir") Seguidores
           a(class="mdl-navigation__link" href="/siguiendo") Siguiendo
-          a(class="mdl-navigation__link") Cerrar Sesi&oacuten
+          a(class="mdl-navigation__link" onclick="logout();") Cerrar Sesi&oacuten
       main(class="mdl-layout__content")
         div(class="page-content")
           block content
