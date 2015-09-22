@@ -162,7 +162,7 @@ function goToPage(newUrl){
 
 function pasajero(){
     $.get('/pass', {}, function (data){ 
-        window.location.href='/pasajero';
+        window.location.href='/pass';
     });
 }
 
