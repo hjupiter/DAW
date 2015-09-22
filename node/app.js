@@ -153,8 +153,8 @@ io.on('connection', function(socket){
       console.log("para: " + para);
       console.log(mensaje);
       console.log("-----------------------------");
-      //timeStamp = Date.now();
-      timeStamp = 0;
+      timeStamp = Date.now();
+      //timeStamp = 0;
           var i = 0;
 		  var flag = 0;
 		  var fecha = new Date();
@@ -193,6 +193,7 @@ io.on('connection', function(socket){
           }
 		  if(flag === 0){
             var mensajeT= new db_handler.mensajeria(de,para,mensaje,fecha,timeStamp,ubicacion,tipo,leido);
+            console.log(mensajeT);
             db_handler.enviar_mensaje(mensajeT,function(queryRes){
               console.log(queryRes);
             });

@@ -56,7 +56,7 @@ create procedure enviar_mensaje(idUsuarioRemitente VARCHAR(20),
 							    idUsuarioRemisor VARCHAR(20),
 							    contenido VARCHAR(280),
 							    fecha date,
-							    hora int,
+							    hora BIGINT,
 							    ubicacionActual VARCHAR(45),
 							    tipo INT,
 							    leido INT)
