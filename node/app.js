@@ -7,7 +7,7 @@ var soap            = require('soap');
 var db_handler      = require('./db_handler');
 var path            = require("path");
 var fs              = require("fs");
-var multipart       = require('connect-multiparty')
+var multipart       = require('connect-multiparty');
 
 //uploading files with multer
 var multer  = require('multer');
@@ -46,10 +46,10 @@ function notificacionPrivadaCallback(socket, usu, mensaje, tipo, de, timeStamp){
 io.on('connection', function(socket){
 	
 	socket.on("inicioSesion",function(username){
-        console.log(usuariosOnlineMensaje)
-        console.log("-----------------------------------------------------------")
+        console.log(usuariosOnlineMensaje);
+        console.log("-----------------------------------------------------------");
         var gr = {nick: username, id: socket.id};
-          if(usuariosOnlineMensaje.length==0){
+          if(usuariosOnlineMensaje.length===0){
             usuariosOnlineMensaje.push(gr);
           }
           else{
@@ -71,7 +71,7 @@ io.on('connection', function(socket){
               usuariosOnlineMensaje.push(gr);
             }
           }
-          console.log(usuariosOnlineMensaje)
+          console.log(usuariosOnlineMensaje);
       });
 
      socket.on("loginUser",function(username){
@@ -327,13 +327,13 @@ app.post('/subir', function (req, res) {
 
     if(type=="image/jpeg" || type=="image/png"){
         var newPath = "./public/uploads/" + name;
-        var is = fs.createReadStream(path)
-        var os = fs.createWriteStream(newPath)
-        is.pipe(os)
+        var is = fs.createReadStream(path);
+        var os = fs.createWriteStream(newPath);
+        is.pipe(os);
         is.on('end', function() {
           //eliminamos el archivo temporal
-          fs.unlinkSync(path)
-        })
+          fs.unlinkSync(path);
+        });
 
         db_handler.update_usuario_imagen(1,req.carPoolSession.username,function(queryRes){
           res.redirect('/inicio');

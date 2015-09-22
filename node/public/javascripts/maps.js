@@ -314,16 +314,8 @@ function abortNewRoute(){
     agregandoData = false;
 }
 
-function logout(){
-    $.post('/logout', {}, function (data){ 
-        console.log("logout: " + data);
-        location.reload(true);
-    });
-}
 
-function miPerfil(){
-    window.location.href = "/inicio";
-}
+
 //JQuery Events
 $(document).ready( function(){
         //Guardar la nueva ruta

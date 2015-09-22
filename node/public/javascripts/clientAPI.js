@@ -16,6 +16,10 @@ function handleJSON(url, callback){
 	xmlhttp.send(null);
 }
 
+function contains(str, target){
+    return str.indexOf(target) != -1;
+}
+
 function processFollowersNotifications(jArray){
 	var i;
 	var start = '<div class="near-container"><span class="time-text">' ;
@@ -63,19 +67,19 @@ function getDias(binary){
 	else if(binary === "1,2,3,4,5")
 		return "Lunes a Viernes";
 	else{
-		if(binary.contains('1'))
+		if(contains(binary,'1'))
 			out += "Lunes, ";
-		if(binary.contains('2'))
+		if(contains(binary,'2'))
 			out += "Martes, ";		
-		if(binary.contains('3'))
+		if(contains(binary,'3'))
 			out += "Miercoles, ";
-		if(binary.contains('4'))
+		if(contains(binary,'4'))
 			out += "Jueves, ";
-		if(binary.contains('5'))
+		if(contains(binary,'5'))
 			out += "Viernes, ";
-		if(binary.contains('6'))
+		if(contains(binary,'6'))
 			out += "Sabado, ";
-		if(binary.contains('7'))
+		if(contains(binary,'7'))
 			out += "Domingo, ";
 		var result =  out.substring(0, out.length-2);
                 var index = result.lastIndexOf(',');
